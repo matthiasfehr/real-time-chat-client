@@ -12,6 +12,12 @@ type Message {
    user: User
 }
 
+input MessageInput{
+  userId: ID!
+  chatRoomId: ID!
+  body: String
+}
+
 type User {
    id: ID!
    name: String

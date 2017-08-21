@@ -1,59 +1,58 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
+import {
+    BrowserRouter,
+    Link,
+    Route,
+    Switch,
+} from 'react-router-dom';
 import './App.css';
-import AddChatRoom from './components/AddChatRoom';
+import ChatRoomsListWithData from './components/ChatRoomsList';
+import NotFound from './components/NotFound';
+import ChatRoomDetailsWithData from './components/ChatRoomDetails';
+
 import {
     ApolloClient,
-    gql,
-    graphql,
     ApolloProvider,
-    createNetworkInterface
+    createNetworkInterface,
+    toIdValue,
 } from 'react-apollo';
 
 const networkInterface = createNetworkInterface({ uri: 'http://localhost:4000/graphql' });
 
+function dataIdFromObject (result) {
+    if (result.__typename) {
+        if (result.id !== undefined) {
+            return `${result.__typename}:${result.id}`;
+        }
+    }
+    return null;
+}
+
 const client = new ApolloClient({
     networkInterface,
+    customResolvers: {
+        Query: {
+            chatRoom: (_, args) => {
+                return toIdValue(dataIdFromObject({ __typename: 'ChatRoom', id: args['id'] }))
+            },
+        },
+    },
 });
-
-const ChatRoomsList = ({ data: {loading, error, chatRooms }}) => {
-    if (loading) {
-        return <p>Loading ...</p>;
-    }
-    if (error) {
-        return <p>{error.message}</p>;
-    }
-    return (
-        <div className="Item-list">
-            <AddChatRoom />
-            { chatRooms.map( ch =>
-                (<div key={ch.id} className="channel">{ch.title}</div>)
-            )}
-        </div>
-    );
-};
-
-export const chatRoomsListQuery = gql`
-   query ChatRoomsListQuery {
-     chatRooms {
-       id
-       title
-     }
-   }
- `;
-const ChatRoomsListWithData = graphql(chatRoomsListQuery)(ChatRoomsList);
 
 class App extends Component {
     render() {
         return (
             <ApolloProvider client={client}>
-                <div className="App">
-                    <div className="App-header">
-                        <img src={logo} className="App-logo" alt="logo" />
-                        <h2>Welcome to Apollo</h2>
+                <BrowserRouter>
+                    <div className="App">
+                        <Link to="/" className="navbar">React + GraphQL Tutorial</Link>
+                        <Switch>
+                            <Route exact path="/" component={ChatRoomsListWithData}/>
+                            <Route path="/chatRoom/:chatRoomId" component={ChatRoomDetailsWithData}/>
+                            <Route component={ NotFound }/>
+                        </Switch>
                     </div>
-                    <ChatRoomsListWithData />
-                </div>
+                </BrowserRouter>
             </ApolloProvider>
         );
     }
