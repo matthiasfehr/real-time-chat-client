@@ -36,8 +36,11 @@ class AddMessage extends Component {
                             chatRoomId: this.props.match.params.chatRoomId,
                         }
                     });
-                    // Add our channel from the mutation to the end.
-                    data.chatRoom.messages.push(createMessage);
+                    if (!data.chatRoom.messages.find((msg) => msg.id === createMessage.id))
+                    {
+                        // Add our Message from the mutation to the end.
+                        data.chatRoom.messages.push(createMessage);
+                    }
                     // Write the data back to the cache.
                     store.writeQuery({
                         query: chatRoomDetailsQuery,

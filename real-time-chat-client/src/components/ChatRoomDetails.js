@@ -10,6 +10,33 @@ import {
 
 class ChatRoomDetails extends Component {
 
+    componentWillMount() {
+        console.log("subscribing to channel", this.props.match.params.chatRoomId);
+        this.props.data.subscribeToMore({
+            document: messagesSubscription,
+            variables: {
+                chatRoomId: this.props.match.params.chatRoomId,
+            },
+            updateQuery: (prev, {subscriptionData}) => {
+                console.log('received update! data: ', subscriptionData);
+                if (!subscriptionData.data) {
+                    return prev;
+                }
+                const newMessage = subscriptionData.data.messageAdded;
+                // don't double add the message
+                if (!prev.chatRoom.messages.find((msg) => msg.id === newMessage.id)) {
+                    return Object.assign({}, prev, {
+                        chatRoom: Object.assign({}, prev.chatRoom, {
+                            messages: [...prev.chatRoom.messages, newMessage],
+                        })
+                    });
+                } else {
+                    return prev;
+                }
+            }
+        });
+    }
+
     render() {
         if (this.props.data.loading) {
             return <ChatRoomPreview chatRoomId={this.props.match.params.chatRoomId}/>;
@@ -39,6 +66,15 @@ export const chatRoomDetailsQuery = gql`
         id
         body
       }
+    }
+  }
+`;
+
+const messagesSubscription = gql`
+  subscription messageAdded($chatRoomId: ID!) {
+    messageAdded(chatRoomId: $chatRoomId) {
+      id
+      body
     }
   }
 `;

@@ -9,15 +9,14 @@ import './App.css';
 import ChatRoomsListWithData from './components/ChatRoomsList';
 import NotFound from './components/NotFound';
 import ChatRoomDetailsWithData from './components/ChatRoomDetails';
-
 import {
     ApolloClient,
     ApolloProvider,
-    createNetworkInterface,
     toIdValue,
 } from 'react-apollo';
+import {createNetworkInterface} from 'apollo-phoenix-websocket'
 
-const networkInterface = createNetworkInterface({ uri: 'http://localhost:4000/graphql' });
+const networkInterface = createNetworkInterface({ uri: 'ws://localhost:4000/socket' });
 
 function dataIdFromObject (result) {
     if (result.__typename) {
