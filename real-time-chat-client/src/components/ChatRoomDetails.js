@@ -11,14 +11,12 @@ import {
 class ChatRoomDetails extends Component {
 
     componentWillMount() {
-        console.log("subscribing to channel", this.props.match.params.chatRoomId);
         this.props.data.subscribeToMore({
             document: messagesSubscription,
             variables: {
                 chatRoomId: this.props.match.params.chatRoomId,
             },
             updateQuery: (prev, {subscriptionData}) => {
-                console.log('received update! data: ', subscriptionData);
                 if (!subscriptionData.data) {
                     return prev;
                 }

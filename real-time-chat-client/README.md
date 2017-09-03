@@ -1,3 +1,9 @@
+# RealTimeChatClient
+
+This is a sample React app which uses GraphQL Subscriptions with Apollo
+to make real time features possible. 
+It was built following this tutorial: https://dev-blog.apollodata.com/full-stack-react-graphql-tutorial-582ac8d24e3b
+
 This project was bootstrapped with [Create React App](https://github.com/facebookincubator/create-react-app).
 
 Below you will find some information on how to perform common tasks.<br>
